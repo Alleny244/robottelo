@@ -240,7 +240,7 @@ def test_negative_update_address_pool(request, options, module_target_sat):
 
 
 @pytest.mark.stubbed
-def test_positive_set_parameter_option_presence():
+def test_positive_set_parameter_option_presence(module_target_sat):
     """Presence of set parameter option in command
 
     :id: f6ef75b2-6932-460c-80ba-2745244ec244
@@ -254,8 +254,7 @@ def test_positive_set_parameter_option_presence():
     """
 
 
-@pytest.mark.stubbed
-def test_positive_create_with_parameter():
+def test_positive_create_with_parameter(module_target_sat):
     """Subnet with parameters can be created
 
     :id: cf40a3f7-5a09-41aa-8b48-874a2af7057d
@@ -269,6 +268,19 @@ def test_positive_create_with_parameter():
 
     :BZ: 1426612
     """
+    subnet = module_target_sat.cli_factory.make_subnet()
+    key = gen_string('alphanumeric', 10)
+    value = gen_string('alphanumeric', 10)
+    result = module_target_sat.cli.Subnet.set_parameter(
+        {'subnet-id': subnet['id'], 'name': key, 'value': value}
+    )
+    assert 'New subnet parameter created' in result
+
+    subnet_info = module_target_sat.cli.Subnet.info({'id': subnet['id']}, output_format='json')
+    assert subnet_info['parameters'][0]['name'] == key
+    assert subnet_info['parameters'][0]['value'] == value
+    assert subnet_info['parameters'][0]['parameter_type'] == 'string'
+    assert subnet_info['parameters'][0]['associated_type'] == 'subnet'
 
 
 @pytest.mark.stubbed
