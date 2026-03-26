@@ -14,7 +14,11 @@ VALIDATORS = dict(
         Validator('server.hostname', is_type_of=str),
         Validator('server.hostnames', must_exist=True, is_type_of=list),
         Validator('server.version.release', must_exist=True),
-        Validator('server.version.source', default='internal', is_in=['internal', 'ga', 'nightly']),
+        Validator(
+            'server.version.source',
+            default='internal',
+            is_in=['internal', 'ga', 'nightly', 'upstream'],
+        ),
         Validator('server.version.rhel_version', must_exist=True, cast=str),
         Validator(
             'server.xdist_behavior', must_exist=True, is_in=['run-on-one', 'balance', 'on-demand']
@@ -252,7 +256,8 @@ VALIDATORS = dict(
         ),
     ],
     jira=[
-        Validator('jira.url', default='https://issues.redhat.com'),
+        Validator('jira.url', default='https://redhat.atlassian.net'),
+        Validator('jira.email', must_exist=True),
         Validator('jira.api_key', must_exist=True),
         Validator('jira.comment_type', default="group"),
         Validator('jira.comment_visibility', default="Red Hat Employee"),

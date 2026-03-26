@@ -123,7 +123,7 @@ def test_rhel_pxe_discovery_provisioning(
 @pytest.mark.rhel_ver_match('7')
 def test_rhel_pxeless_discovery_provisioning(
     module_discovery_sat,
-    pxeless_discovery_host,
+    pxeless_discovery_hosts,
     module_provisioning_rhel_content,
     provisioning_hostgroup,
     request,
@@ -138,10 +138,12 @@ def test_rhel_pxeless_discovery_provisioning(
     :expectedresults: Host should be provisioned successfully
 
     :CaseImportance: Critical
+
+    :Verifies: SAT-39469
     """
     sat = module_discovery_sat.sat
-    pxeless_discovery_host.power_control(ensure=False)
-    mac = pxeless_discovery_host.provisioning_nic_mac_addr
+    pxeless_discovery_hosts.power_control(ensure=False)
+    mac = pxeless_discovery_hosts.provisioning_nic_mac_addr
     org = provisioning_hostgroup.organization[0].read()
     loc = provisioning_hostgroup.location[0].read()
     wait_for(
@@ -203,6 +205,7 @@ def test_rhel_pxeless_discovery_provisioning(
     )
     assert host.read().build_status_label == 'Installed'
     assert not sat.api.DiscoveredHost().search(query={'mac': mac})
+    assert not sat.api.Host().search(query={'search': 'name="localhost.localdomain"'})
 
 
 @pytest.mark.stubbed
@@ -483,11 +486,6 @@ def test_positive_verify_updated_fdi_image(target_sat):
     discovery_ks_path = '/usr/share/foreman-discovery-image/foreman-discovery-image.ks'
     target_sat.register_to_cdn()
     target_sat.execute('yum -y --disableplugin=foreman-protector install foreman-discovery-image')
-
-    if target_sat.os_version.major == 9:
-        version = '9.6' if is_open('SAT-40503') else str(target_sat.os_version)
-    elif target_sat.os_version.major == 8:
-        version = str(target_sat.os_version)
-
+    version = str(target_sat.os_version)
     result = target_sat.execute(f'grep "url=" {discovery_ks_path}')
     assert version in result.stdout
