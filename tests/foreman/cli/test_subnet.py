@@ -257,7 +257,7 @@ def test_positive_set_parameter_option_presence(module_target_sat):
     command_output = module_target_sat.cli.Subnet().execute('subnet set-parameter --help')
     assert all(
         opt in command_output
-        for opt in ['--subnet', '--name', '--value', '--hidden-value', ' --parameter-type']
+        for opt in ['--subnet', '--name', '--value', '--hidden-value', '--parameter-type']
     )
 
 
