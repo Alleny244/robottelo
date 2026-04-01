@@ -219,6 +219,8 @@ ENVIRONMENT = "Library"
 
 SYNC_INTERVAL = {'hour': "hourly", 'day': "daily", 'week': "weekly", 'custom': "custom cron"}
 
+SYNC_COMPLETE = 'Syncing complete'
+
 REPO_TYPE = {
     "deb": "deb",
     'yum': "yum",
@@ -2063,6 +2065,7 @@ SATELLITE_INSTALLER_CONFIG = '/etc/foreman-installer/scenarios.d/satellite.yaml'
 CAPSULE_INSTALLER_CONFIG = '/etc/foreman-installer/scenarios.d/capsule.yaml'
 SATELLITE_ANSWER_FILE = "/etc/foreman-installer/scenarios.d/satellite-answers.yaml"
 CAPSULE_ANSWER_FILE = "/etc/foreman-installer/scenarios.d/capsule-answers.yaml"
+CONTAINER_GATEWAY_SETTINGS = "/etc/foreman-proxy/settings.d/container_gateway.yml"
 MAINTAIN_HAMMER_YML = "/etc/foreman-maintain/foreman-maintain-hammer.yml"
 SATELLITE_MAINTAIN_YML = "/etc/foreman-maintain/foreman_maintain.yml"
 FOREMAN_SETTINGS_YML = '/etc/foreman/settings.yaml'
@@ -2241,6 +2244,7 @@ FOREMAN_ANSIBLE_MODULES = [
     "smart_class_parameter",
     "smart_class_parameter_override_value",
     "smart_proxy",
+    "smart_proxy_refresh",
     "status_info",
     "subnet_info",
     "subnet",
@@ -2357,6 +2361,7 @@ FAM_TEST_PLAYBOOKS = [
     "smart_class_parameter_override_value",
     "smart_class_parameter",
     "smart_proxy",
+    "smart_proxy_refresh",
     "status_info",
     "subnet_info",
     "subnets_role",
