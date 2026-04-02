@@ -148,16 +148,24 @@ def test_positive_end_to_end_azurerm_ft_host_provision(
                     delay=10,
                 )
 
-                # AzureRm Cloud assertion
-                assert not azurecloud_vm.exists
+                # AzureRm Cloud assertion: VM should disappear from Azure inventory
+                wait_for(
+                    lambda: not azurermclient.find_vms(name=hostname.lower()),
+                    timeout=900,
+                    delay=15,
+                )
 
         except Exception as error:
             azure_vm = sat_azure.api.Host().search(query={'search': f'name={fqdn}'})
             if azure_vm:
                 azure_vm[0].delete(synchronous=False)
-            azurecloud_vm = azurermclient.get_vm(name=hostname.lower())
-            if azurecloud_vm.exists:
-                azurecloud_vm.delete()
+            # Best-effort Azure cleanup; ignore "not found" conditions
+            try:
+                matching_vms = azurermclient.find_vms(name=hostname.lower())
+                if matching_vms:
+                    matching_vms[0].delete()
+            except Exception:
+                pass
             raise error
 
 
