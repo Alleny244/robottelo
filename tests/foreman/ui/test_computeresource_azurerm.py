@@ -143,14 +143,10 @@ def test_positive_end_to_end_azurerm_ft_host_provision(
                 with sat_azure.api_factory.satellite_setting('destroy_vm_on_host_delete=True'):
                     session.host_new.delete(fqdn)
                 wait_for(
-                    lambda: session.host_new.search(fqdn)[0].get('Name') == 'No Results',
-                    timeout=300,
-                    delay=10,
-                )
-
-                # AzureRm Cloud assertion: VM should disappear from Azure inventory
-                wait_for(
-                    lambda: not azurermclient.find_vms(name=hostname.lower()),
+                    lambda: (
+                        session.host_new.search(fqdn)[0].get('Name') == 'No Results'
+                        and not azurermclient.find_vms(name=hostname.lower())
+                    ),
                     timeout=900,
                     delay=15,
                 )
