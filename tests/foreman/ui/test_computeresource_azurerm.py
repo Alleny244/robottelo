@@ -147,8 +147,8 @@ def test_positive_end_to_end_azurerm_ft_host_provision(
                         session.host_new.search(fqdn)[0].get('Name') == 'No Results'
                         and not azurermclient.find_vms(name=hostname.lower())
                     ),
-                    timeout=900,
-                    delay=15,
+                    timeout=300,
+                    delay=10,
                 )
 
         except Exception as error:
