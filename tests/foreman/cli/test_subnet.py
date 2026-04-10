@@ -286,7 +286,7 @@ def test_positive_create_with_parameter_and_multiple_values(module_target_sat):
     )
     subnet_info = module_target_sat.cli.Subnet.info({'id': subnet['id']}, output_format='json')
     params = subnet_info['parameters']
-    param = next(parameter for parameter in params if param_name in parameter['name'])
+    param = next(parameter for parameter in params if param_name == parameter['name'])
     stored = param['value']
     stored_str = str(stored).strip()
     assert stored_str == comma_value
@@ -319,7 +319,7 @@ def test_positive_create_with_parameter_and_multiple_names(module_target_sat):
     )
     subnet_info = module_target_sat.cli.Subnet.info({'id': subnet['id']}, output_format='json')
     params = subnet_info['parameters']
-    param = next(parameter for parameter in params if param_name in parameter['name'])
+    param = next(parameter for parameter in params if param_name == parameter['name'])
     stored = param['value']
     stored_str = str(stored).strip()
     assert stored_str == param_value
@@ -357,9 +357,8 @@ def test_negative_create_with_parameter_and_invalid_separator(module_target_sat)
     module_target_sat.cli.Subnet.delete({'id': subnet['id']})
 
 
-@pytest.mark.stubbed
 @pytest.mark.upgrade
-def test_positive_create_with_multiple_parameters():
+def test_positive_create_with_multiple_parameters(module_target_sat):
     """Subnet with more than one parameters
 
     :id: 2a9b3043-1add-43d2-af2f-ff39304eb698
@@ -374,6 +373,21 @@ def test_positive_create_with_multiple_parameters():
 
     :BZ: 1426612
     """
+    subnet = module_target_sat.cli_factory.make_subnet()
+    param_specs = [
+        (gen_string('alphanumeric', 10), gen_string('alphanumeric', 10)) for _ in range(3)
+    ]
+    for name, value in param_specs:
+        module_target_sat.cli.Subnet.set_parameter(
+            {'subnet-id': subnet['id'], 'name': name, 'value': value}
+        )
+    subnet_info = module_target_sat.cli.Subnet.info({'id': subnet['id']}, output_format='json')
+    params = subnet_info['parameters']
+    assert len(params) == len(param_specs)
+    for name, value in param_specs:
+        param = next(parameter for parameter in params if name == parameter['name'])
+        assert str(param['value']).strip() == value
+    module_target_sat.cli.Subnet.delete({'id': subnet['id']})
 
 
 @pytest.mark.stubbed
