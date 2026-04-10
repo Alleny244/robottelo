@@ -289,12 +289,11 @@ def test_positive_create_with_parameter_and_multiple_values(module_target_sat):
     param = next(parameter for parameter in params if param_name in parameter['name'])
     stored = param['value']
     stored_str = str(stored).strip()
-    assert comma_value in stored_str or stored_str == comma_value
+    assert stored_str == comma_value
     module_target_sat.cli.Subnet.delete({'id': subnet['id']})
 
 
-@pytest.mark.stubbed
-def test_positive_create_with_parameter_and_multiple_names():
+def test_positive_create_with_parameter_and_multiple_names(module_target_sat):
     """Subnet parameters can be created with multiple names with valid
     separators
 
@@ -311,6 +310,20 @@ def test_positive_create_with_parameter_and_multiple_names():
 
     :BZ: 1426612
     """
+    subnet = module_target_sat.cli_factory.make_subnet()
+    name_parts = [gen_string('alphanumeric', 6) for _ in range(3)]
+    param_name = '/'.join(name_parts)
+    param_value = gen_string('alphanumeric', 10)
+    module_target_sat.cli.Subnet.set_parameter(
+        {'subnet-id': subnet['id'], 'name': param_name, 'value': param_value}
+    )
+    subnet_info = module_target_sat.cli.Subnet.info({'id': subnet['id']}, output_format='json')
+    params = subnet_info['parameters']
+    param = next(parameter for parameter in params if param_name in parameter['name'])
+    stored = param['value']
+    stored_str = str(stored).strip()
+    assert stored_str == param_value
+    module_target_sat.cli.Subnet.delete({'id': subnet['id']})
 
 
 @pytest.mark.stubbed
